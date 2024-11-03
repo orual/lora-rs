@@ -8,7 +8,7 @@ pub use super::{
     region::{self, Region},
     Downlink, JoinMode,
 };
-use crate::log;
+use crate::log::{self, trace};
 use core::marker::PhantomData;
 use futures::{future::select, future::Either, pin_mut};
 use heapless::Vec;
@@ -232,10 +232,12 @@ where
                     .tx(tx_config, self.radio_buffer.as_ref_for_read())
                     .await
                     .map_err(Error::Radio)?;
-
+                trace!("Join request transmitted: timeout {}ms", ms);
                 // Receive join response within RX window
                 self.timer.reset();
-                Ok(self.rx_downlink(&Frame::Join, ms).await?.try_into()?)
+                let res = self.rx_downlink(&Frame::Join, ms).await?.try_into()?;
+                trace!("Join response received: {:?}", res);
+                Ok(res)
             }
             JoinMode::ABP { newskey, appskey, devaddr } => {
                 self.mac.join_abp(*newskey, *appskey, *devaddr);

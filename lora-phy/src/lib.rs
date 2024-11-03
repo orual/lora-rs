@@ -88,6 +88,11 @@ where
             .create_modulation_params(spreading_factor, bandwidth, coding_rate, frequency_in_hz)
     }
 
+    /// Set the modulation parameters prior to using a communication channel
+    pub async fn set_modulation_params(&mut self, mdltn_params: &ModulationParams) -> Result<(), RadioError> {
+        self.radio_kind.set_modulation_params(mdltn_params).await
+    }
+
     /// Create packet parameters for a send operation on a communication channel
     pub fn create_tx_packet_params(
         &mut self,
