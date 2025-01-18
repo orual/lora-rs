@@ -21,7 +21,7 @@ where
     RK: RadioKind,
     DLY: DelayNs,
 {
-    pub(crate) lora: LoRa<RK, DLY>,
+    pub lora: LoRa<RK, DLY>,
     rx_pkt_params: Option<PacketParams>,
     rx_window_lead_time: u32,
     rx_window_buffer: u32,

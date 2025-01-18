@@ -189,6 +189,10 @@ where
         }
         Ok(())
     }
+    /// Set the modulation parameters prior to using a communication channel
+    pub async fn set_modulation_params(&mut self, mdltn_params: &ModulationParams) -> Result<(), RadioError> {
+        self.radio_kind.set_modulation_params(mdltn_params).await
+    }
 
     /// Prepare the radio for a transmit operation
     pub async fn prepare_for_tx(

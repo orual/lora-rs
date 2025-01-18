@@ -234,10 +234,12 @@ where
                     .tx(tx_config, self.radio_buffer.as_ref_for_read())
                     .await
                     .map_err(Error::Radio)?;
-
+                trace!("Join request transmitted: timeout {}ms", ms);
                 // Receive join response within RX window
                 self.timer.reset();
-                Ok(self.rx_downlink(&Frame::Join, ms).await?.try_into()?)
+                let res = self.rx_downlink(&Frame::Join, ms).await?.try_into()?;
+                trace!("Join response received: {:?}", res);
+                Ok(res)
             }
             JoinMode::ABP { nwkskey, appskey, devaddr } => {
                 self.mac.join_abp(*nwkskey, *appskey, *devaddr);
