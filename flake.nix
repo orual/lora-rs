@@ -13,22 +13,22 @@
     devShells.x86_64-linux.default = pkgs.mkShell  {
         name = "lora-rs";
 
-        buildInputs = [ 
-          esp-rs 
-          pkgs.rustup 
-          pkgs.espflash 
-          pkgs.rust-analyzer 
-          pkgs.pkg-config 
-          pkgs.stdenv.cc 
-          pkgs.bacon 
-          pkgs.systemdMinimal 
+        buildInputs = [
+          esp-rs
+          pkgs.rustup
+          pkgs.espflash
+          pkgs.rust-analyzer
+          pkgs.pkg-config
+          pkgs.stdenv.cc
+          pkgs.bacon
+          pkgs.systemdMinimal
         ];
-        
+
         shellHook = ''
         export PS1="(esp-rs)$PS1"
         # this is important - it tells rustup where to find the esp toolchain,
         # without needing to copy it into your local ~/.rustup/ folder.
-        export RUSTUP_TOOLCHAIN=${esp-rs}
+        #export RUSTUP_TOOLCHAIN=${esp-rs}
         '';
     };
   };
