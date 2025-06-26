@@ -488,6 +488,33 @@ where
             }
         }
     }
+
+    /// Accomodating mode, will handle valid LoRaWAN frames, 
+    /// while passing through any other bytes received.
+    pub async fn hybrid_listen(&mut self) -> Result<EitherRx, Error<R::PhyError>> {
+        loop {
+            let (sz, _rx_quality) =
+                self.radio.rx_continuous(self.radio_buffer.as_mut()).await.map_err(Error::Radio)?;
+            self.radio_buffer.set_pos(sz);
+            match self.mac.handle_rxc::<C, N, D>(&mut self.radio_buffer, &mut self.downlink)? {
+                mac::Response::NoUpdate => {
+                    let mut buf = Vec::new();
+                    buf.extend_from_slice(self.radio_buffer.as_ref_for_read()).unwrap();
+                    self.radio_buffer.clear();
+                    return Ok(EitherRx::Raw(buf));
+                }
+                r => {
+                    self.radio_buffer.clear();
+                    return Ok(EitherRx::LoRaWAN(r));
+                }
+            }
+        }
+    }
+}
+
+pub enum EitherRx {
+    Raw(Vec<u8, 256>),
+    LoRaWAN(mac::Response),
 }
 
 /// Allows to fine-tune the beginning and end of the receive windows for a specific board and runtime.
